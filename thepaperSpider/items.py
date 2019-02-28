@@ -56,3 +56,9 @@ class NewsThemeItem(scrapy.Item):
     # picture = scrapy.Field()
     pass
 
+class NewsUpdateItem(scrapy.Item):
+    # theme = scrapy.Field()
+    newsId = scrapy.Field()
+    # picture = scrapy.Field()
+    pass
+

@@ -11,7 +11,8 @@ import scrapy
 from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 
-from thepaperSpider.items import ImgItem, NewsThemeItem, CommentItem, UserItem, ThepaperspiderItem, CategoryItem
+from thepaperSpider.items import ImgItem, NewsThemeItem, CommentItem, UserItem, ThepaperspiderItem, CategoryItem, \
+    NewsUpdateItem
 
 
 class ThepaperspiderPipeline(object):
@@ -259,8 +260,44 @@ class NewsUpdatePipeline(object):
             result = self.cursor.fetchone()
             print(result)
             storyid = result[0]
+
             sql = 'update news set story_id = %s where keywords = %s'
             rows = self.cursor.execute(sql,(storyid,keywords))
             print(rows)
             self.connect.commit()
+
+        if isinstance(item, NewsUpdateItem):
+            newsId = item['newsId']
+            sql = 'select * from comment where news_id = %s'
+            self.cursor.execute(sql, (newsId))
+            result = self.cursor.fetchall()
+            print(result)
+            comment_count = len(result)
+            print(comment_count)
+            sql = 'select collected_count,story_id from news where newsid = %s'
+            self.cursor.execute(sql,(newsId))
+            result = self.cursor.fetchall()
+            collected_count = result[0][0]
+            storyid = result[0][1]
+            sql = 'update news set comment_count = %s where newsid = %s'
+            rows = self.cursor.execute(sql, (comment_count, newsId))
+            print(rows)
+            print(comment_count+collected_count)
+            if comment_count+collected_count<200 or storyid >1:
+                print('总数小于200或非主题')
+                sql = 'update news set status = %s where newsid = %s'
+                rows = self.cursor.execute(sql, ('0', newsId))
+                print(rows)
+            else:
+                sql = 'update news set status = %s where newsid = %s'
+                rows = self.cursor.execute(sql, ('1', newsId))
+                print(rows)
+            self.connect.commit()
+            # print(collected_count)
+            #
+            # sql = 'update news set story_id = %s where keywords = %s'
+            # rows = self.cursor.execute(sql,(storyid,keywords))
+            # print(rows)
+            # self.connect.commit()
         return item
+
