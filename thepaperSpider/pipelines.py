@@ -12,7 +12,7 @@ from scrapy.exceptions import DropItem
 from scrapy.pipelines.images import ImagesPipeline
 
 from thepaperSpider.items import ImgItem, NewsThemeItem, CommentItem, UserItem, ThepaperspiderItem, CategoryItem, \
-    NewsUpdateItem
+    NewsUpdateItem, StoryUpdateItem
 
 
 class ThepaperspiderPipeline(object):
@@ -285,9 +285,9 @@ class NewsUpdatePipeline(object):
             print(comment_count+collected_count)
             if comment_count+collected_count<200 or storyid >1:
                 print('总数小于200或非主题')
-                sql = 'update news set status = %s where newsid = %s'
-                rows = self.cursor.execute(sql, ('0', newsId))
-                print(rows)
+                # sql = 'update news set status = %s where newsid = %s'
+                # rows = self.cursor.execute(sql, ('0', newsId))
+                # print(rows)
             else:
                 sql = 'update news set status = %s where newsid = %s'
                 rows = self.cursor.execute(sql, ('1', newsId))
@@ -299,5 +299,23 @@ class NewsUpdatePipeline(object):
             # rows = self.cursor.execute(sql,(storyid,keywords))
             # print(rows)
             # self.connect.commit()
-        return item
 
+        if isinstance(item, StoryUpdateItem):
+            storyid = item['storyId']
+            sql = 'select newsid from news where story_id = %s'
+            self.cursor.execute(sql, (storyid))
+            result = self.cursor.fetchall()
+            print(result)
+            storyNewsCount = len(result)
+            print(storyNewsCount)
+            if storyNewsCount < 4:
+                sql = 'update news set story_id = %s where story_id = %s'
+                rows = self.cursor.execute(sql, ('1', storyid))
+                print(rows)
+                sql = 'delete from news_story where storyid = %s'
+                rows = self.cursor.execute(sql,(storyid))
+                print(rows)
+            else:
+                print('保留主题')
+            self.connect.commit()
+        return item

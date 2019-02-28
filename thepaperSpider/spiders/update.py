@@ -2,13 +2,13 @@
 import pymysql
 import scrapy
 
-from thepaperSpider.items import NewsUpdateItem
+from thepaperSpider.items import NewsUpdateItem, StoryUpdateItem
 
 
 class UpdateSpider(scrapy.Spider):
     name = 'update'
-    allowed_domains = ['thepaper.cn']
-    start_urls = ['http://thepaper.cn/']
+    allowed_domains = ['news.baidu.com']
+    start_urls = ['https://news.baidu.com/']
     newsIdList = []
 
     def __init__(self, name=None, **kwargs):
@@ -34,4 +34,14 @@ class UpdateSpider(scrapy.Spider):
             item['newsId'] = newsId
             yield item
         print(newsTuple)
-        pass
+        sql = 'select storyid from news_story'
+        result = self.cursor.execute(sql)
+        storyTuple = self.cursor.fetchall()
+        for story in storyTuple:
+            storyId = story[0]
+            item = StoryUpdateItem()
+            item['storyId'] = storyId
+            yield item
+        print(storyTuple)
+        self.connect.commit()
+        # pass
