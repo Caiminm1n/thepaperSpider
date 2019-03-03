@@ -21,6 +21,7 @@ class ThepaperSpider(scrapy.Spider):
 
     def start_requests(self):
         start_url = self.baseUrl
+
         return [scrapy.FormRequest(start_url,callback=self.head_url_callback)]
 
     def head_url_callback(self,response):
@@ -173,8 +174,11 @@ class ThepaperSpider(scrapy.Spider):
             userItem = UserItem()
             userItem['userName'] = userName
             userItem['userImg'] = userImg
-            userItem['comefrom'] = 'user'
+            # userItem['i'] = 'user'
             yield userItem
+            # userImgItem = UserImg()
+            # userImgItem['userName'] = userName
+            # userImgItem[]
             userComment = selector.xpath(".//div[@class='aqwright']/div[1]/a/text()").extract_first()
             commentItem = CommentItem()
             commentItem['newsTitle'] = newsTitle

@@ -40,8 +40,13 @@ class CommentItem(scrapy.Item):
 class UserItem(scrapy.Item):
     userName = scrapy.Field()
     userImg = scrapy.Field()
-    comefrom = scrapy.Field()
+    images = scrapy.Field()
     pass
+
+# class UserImg(scrapy.Item):
+#     userImg = scrapy.Field()
+#     userName = scrapy.Field()
+#     pass
 
 class ImgItem(scrapy.Item):
     newsTitle = scrapy.Field()
@@ -67,4 +72,5 @@ class StoryUpdateItem(scrapy.Item):
     storyId = scrapy.Field()
     # picture = scrapy.Field()
     pass
+
 

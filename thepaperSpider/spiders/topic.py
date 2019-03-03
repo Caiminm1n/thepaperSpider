@@ -23,7 +23,7 @@ class TopicSpider(scrapy.Spider):
         self.connect = pymysql.connect(
             host='127.0.0.1',
             port=3306,
-            db='quwen1',
+            db='quwen',
             user='root',
             passwd='123456',
             charset='utf8',
@@ -159,7 +159,7 @@ class TopicSpider(scrapy.Spider):
             userItem = UserItem()
             userItem['userName'] = userName
             userItem['userImg'] = userImg
-            userItem['comefrom'] = 'user'
+            # userItem['i'] = 'user'
             yield userItem
             userComment = selector.xpath(".//div[@class='aqwright']/div[1]/a/text()").extract_first()
             commentItem = CommentItem()

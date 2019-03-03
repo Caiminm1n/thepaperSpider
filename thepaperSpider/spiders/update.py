@@ -7,8 +7,8 @@ from thepaperSpider.items import NewsUpdateItem, StoryUpdateItem
 
 class UpdateSpider(scrapy.Spider):
     name = 'update'
-    allowed_domains = ['news.baidu.com']
-    start_urls = ['https://news.baidu.com/']
+    allowed_domains = ['news.qq.com']
+    start_urls = ['https://news.qq.com/']
     newsIdList = []
 
     def __init__(self, name=None, **kwargs):
@@ -16,7 +16,7 @@ class UpdateSpider(scrapy.Spider):
         self.connect = pymysql.connect(
             host='127.0.0.1',
             port=3306,
-            db='quwen2',
+            db='quwen',
             user='root',
             passwd='123456',
             charset='utf8',
@@ -38,10 +38,13 @@ class UpdateSpider(scrapy.Spider):
         result = self.cursor.execute(sql)
         storyTuple = self.cursor.fetchall()
         for story in storyTuple:
-            storyId = story[0]
-            item = StoryUpdateItem()
-            item['storyId'] = storyId
-            yield item
+            if story =='1':
+                pass
+            else:
+                storyId = story[0]
+                item = StoryUpdateItem()
+                item['storyId'] = storyId
+                yield item
         print(storyTuple)
         self.connect.commit()
         # pass
